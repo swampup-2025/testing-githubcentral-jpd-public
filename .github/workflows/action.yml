@@ -10,6 +10,7 @@ jobs:
   hello-world:
     runs-on: ubuntu-latest
     permissions:
+      contents: read              # <--- ADDED: Needed by actions/checkout
       actions: read             # using $GITHUB_OUTPUT
       id-token: write           # Necessary to create attestations
       attestations: write       # Necessary to push attestations to GH account
@@ -24,25 +25,30 @@ jobs:
         env:
           JF_URL: ${{ vars.JF_URL }}
           JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
+          JF_REPO_KEY: "dev-generic-local"
+          TARGET_PATH_IN_REPO: "runs/${{ github.run_number }}/${{ env.FILE_NAME }}"
       - name: Push To Artifactory
         id: build
         env:
           ARTIFACT_PATH: "dev-generic-local/github-example/readme.md"
           FILE_NAME: "artifact.txt"
         run: |
-          #upload to artifactory using jfrog cli
-          jf rt u ${{ env.FILE_NAME }} runs/${{ github.run_number }}/${{ env.FILE_NAME }} --detailed-summary | tee upload-summary.json
-          sha256=$(jq -r '.files[0].sha256' upload-summary.json)
-          target=$(jq -r '.files[0].target' upload-summary.json | sed 's|^https://||')
           
-          # storing in output for later use
-          echo "artifact-digest=$sha256" >> $GITHUB_OUTPUT
-          echo "target=$target" >> $GITHUB_OUTPUT
-          echo "artifact_path=${{ env.ARTIFACT_PATH }}" >> $GITHUB_OUTPUT
+          echo "Uploading ${{ env.FILE_NAME }} to ${{ env.JF_REPO_KEY }}/${{ env.TARGET_PATH_IN_REPO }}"
+          jf rt u ${{ env.FILE_NAME }} ${{ env.JF_REPO_KEY }}/${{ env.TARGET_PATH_IN_REPO }} --detailed-summary | tee upload-summary.json
+
+          # Extract SHA256 digest
+          SHA256_DIGEST=$(jq -r '.files[0].sha256' upload-summary.json)
+          ARTIFACTORY_SUBJECT_NAME="${{ env.JF_REPO_KEY }}/${{ env.TARGET_PATH_IN_REPO }}"
+
+          # Storing outputs for later use
+          echo "artifact_digest=$SHA256_DIGEST" >> $GITHUB_OUTPUT
+          echo "artifactory_subject_name=$ARTIFACTORY_SUBJECT_NAME" >> $GITHUB_OUTPUT
+          echo "status=success" >> $GITHUB_OUTPUT
 
       - name: Create build-provenance attestation
         id: attest
         uses: actions/attest-build-provenance@v2
         with:
-          subject-name: ${{ steps.build.outputs.artifact_path }}
-          subject-digest: sha256:${{ steps.build.outputs.artifact-digest }}
+          subject-name: ${{ steps.build.outputs.artifactory_subject_name }}
+          subject-digest: sha256:${{ steps.build.outputs.artifact_digest }}
