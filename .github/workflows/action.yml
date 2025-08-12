@@ -32,10 +32,10 @@ jobs:
         run: |
           
           jf c s
-          TARGET_NAME=${{ env.JF_REPO_KEY }}/${{ env.TARGET_PATH_IN_REPO }
+          TARGET_NAME=${{ env.JF_REPO_KEY }}/${{ env.TARGET_PATH_IN_REPO }}
           
-          echo "Uploading ${{ env.FILE_NAME }} to TARGET_NAME"
-          jf rt u ${{ env.FILE_NAME }} TARGET_NAME --detailed-summary | tee upload-summary.json
+          echo "Uploading ${{ env.FILE_NAME }} to $TARGET_NAME"
+          jf rt u ${{ env.FILE_NAME }} $TARGET_NAME --detailed-summary | tee upload-summary.json
 
           # Extract SHA256 digest
           SHA256_DIGEST=$(jq -r '.files[0].sha256' upload-summary.json)
