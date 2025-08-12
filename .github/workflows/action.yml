@@ -15,9 +15,6 @@ jobs:
       actions: read             # using $GITHUB_OUTPUT
       id-token: write           # Necessary to create attestations
       attestations: write       # Necessary to push attestations to GH account
-    env:
-      JF_URL: ${{ vars.JF_URL }}
-      JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -34,6 +31,8 @@ jobs:
           JF_REPO_KEY: "dev-generic-local"
           TARGET_PATH_IN_REPO: "runs/${{ github.run_number }}/${{ env.FILE_NAME }}"
         run: |
+          
+          jf c s
           
           echo "Uploading ${{ env.FILE_NAME }} to ${{ env.JF_REPO_KEY }}/${{ env.TARGET_PATH_IN_REPO }}"
           jf rt u ${{ env.FILE_NAME }} ${{ env.JF_REPO_KEY }}/${{ env.TARGET_PATH_IN_REPO }} --detailed-summary | tee upload-summary.json
