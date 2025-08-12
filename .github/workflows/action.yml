@@ -25,13 +25,13 @@ jobs:
         env:
           JF_URL: ${{ vars.JF_URL }}
           JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
-          JF_REPO_KEY: "dev-generic-local"
-          TARGET_PATH_IN_REPO: "runs/${{ github.run_number }}/${{ env.FILE_NAME }}"
       - name: Push To Artifactory
         id: build
         env:
           ARTIFACT_PATH: "dev-generic-local/github-example/readme.md"
           FILE_NAME: "artifact.txt"
+          JF_REPO_KEY: "dev-generic-local"
+          TARGET_PATH_IN_REPO: "runs/${{ github.run_number }}/${{ env.FILE_NAME }}"
         run: |
           
           echo "Uploading ${{ env.FILE_NAME }} to ${{ env.JF_REPO_KEY }}/${{ env.TARGET_PATH_IN_REPO }}"
