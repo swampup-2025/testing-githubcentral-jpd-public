@@ -1,0 +1,48 @@
+name: Hello World
+
+on:
+#  push:
+#    branches:
+#      - main
+  workflow_dispatch:
+
+jobs:
+  hello-world:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read             # using $GITHUB_OUTPUT
+      id-token: write           # Necessary to create attestations
+      attestations: write       # Necessary to push attestations to GH account
+    env:
+      JF_URL: ${{ vars.JF_URL }}
+      JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup JFrog CLI
+        uses: jfrog/setup-jfrog-cli@v4
+        env:
+          JF_URL: ${{ vars.JF_URL }}
+          JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
+      - name: Push To Artifactory
+        id: build
+        env:
+          ARTIFACT_PATH: "dev-generic-local/github-example/readme.md"
+          FILE_NAME: "artifact.txt"
+        run: |
+          #upload to artifactory using jfrog cli
+          jf rt u ${{ env.FILE_NAME }} runs/${{ github.run_number }}/${{ env.FILE_NAME }} --detailed-summary | tee upload-summary.json
+          sha256=$(jq -r '.files[0].sha256' upload-summary.json)
+          target=$(jq -r '.files[0].target' upload-summary.json | sed 's|^https://||')
+          
+          # storing in output for later use
+          echo "artifact-digest=$sha256" >> $GITHUB_OUTPUT
+          echo "target=$target" >> $GITHUB_OUTPUT
+          echo "artifact_path=${{ env.ARTIFACT_PATH }}" >> $GITHUB_OUTPUT
+
+      - name: Create build-provenance attestation
+        id: attest
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: ${{ steps.build.outputs.artifact_path }}
+          subject-digest: sha256:${{ steps.build.outputs.artifact-digest }}
