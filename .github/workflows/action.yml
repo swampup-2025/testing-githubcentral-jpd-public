@@ -26,9 +26,8 @@ jobs:
       - name: Push To Artifactory
         id: build
         env:
-          ARTIFACT_PATH: "dev-generic-local/github-example/readme.md"
           FILE_NAME: "artifact.txt"
-          JF_REPO_KEY: "dev-generic-local"
+          JF_REPO_KEY: "example-repo-local"
           TARGET_PATH_IN_REPO: "runs/${{ github.run_number }}/${{ env.FILE_NAME }}"
         run: |
           
