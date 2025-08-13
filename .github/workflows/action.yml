@@ -31,7 +31,9 @@ jobs:
           TARGET_PATH_IN_REPO: "runs/${{ github.run_number }}"
         run: |
           
-          jf c s
+          TIMESTAMP=$(date +%Y%m%d%H%M%S)
+          echo "This is a test artifact created at $TIMESTAMP" >> ${{ env.FILE_NAME }}
+          
           TARGET_NAME=${{ env.JF_REPO_KEY }}/${{ env.TARGET_PATH_IN_REPO }}/${{ env.FILE_NAME }}
           
           echo "Uploading ${{ env.FILE_NAME }} to $TARGET_NAME"
