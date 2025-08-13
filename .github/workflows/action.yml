@@ -32,7 +32,7 @@ jobs:
         run: |
           
           jf c s
-          TARGET_NAME=${{ env.JF_REPO_KEY }}/${{ env.TARGET_PATH_IN_REPO }}
+          TARGET_NAME=${{ env.JF_REPO_KEY }}/${{ env.TARGET_PATH_IN_REPO }}/${ env.FILE_NAME }}
           
           echo "Uploading ${{ env.FILE_NAME }} to $TARGET_NAME"
           jf rt u ${{ env.FILE_NAME }} $TARGET_NAME --detailed-summary | tee upload-summary.json
