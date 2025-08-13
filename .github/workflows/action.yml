@@ -28,7 +28,7 @@ jobs:
         env:
           FILE_NAME: "artifact.txt"
           JF_REPO_KEY: "example-repo-local"
-          TARGET_PATH_IN_REPO: "runs/${{ github.run_number }}/${{ env.FILE_NAME }}"
+          TARGET_PATH_IN_REPO: "runs/${{ github.run_number }}"
         run: |
           
           jf c s
