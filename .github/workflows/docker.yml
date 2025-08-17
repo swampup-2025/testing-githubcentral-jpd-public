@@ -58,7 +58,7 @@ jobs:
 
           #send digest to output for provenance attestation
           digest=$(cat metadata.json | jq '.["containerimage.digest"]')
-          echo "docker_digest=$digest" | tr -d '"' >> $GITHUB_OUTPUT
+          echo "digest=$digest" | tr -d '"' >> $GITHUB_OUTPUT
 
       - name: Create build-provenance attestation
         id: attest
