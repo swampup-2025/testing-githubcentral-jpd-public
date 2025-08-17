@@ -53,14 +53,13 @@ jobs:
           --metadata-file=metadata.json \
           --push .
           
-          cat metadata.json
           digest=$(cat metadata.json | jq '.["containerimage.digest"]')
           echo "digest=$digest" | tr -d '"' >> $GITHUB_OUTPUT
 
-#      - name: Create build-provenance attestation
-#        id: attest
-#        uses: actions/attest-build-provenance@v2
-#        with:
-#          subject-name: ${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME }}/${{ github.run_number }}/manifest.json
-#          subject-digest: ${{ steps.build-and-push.outputs.digest }}
+      - name: Create build-provenance attestation
+        id: attest
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: ${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME }}/${{ github.run_number }}/manifest.json
+          subject-digest: ${{ steps.build-and-push.outputs.digest }}
 
