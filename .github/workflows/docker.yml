@@ -21,6 +21,7 @@ jobs:
       JF_REGISTRY: ${{ vars.JF_REGISTRY }}  # e.g: githubcentral.jfrog.io/dev-docker
       JF_DOCKER_REPO: dev-docker
       IMAGE_NAME: hello-world
+      BUILD_NAME: hello-world-build
 
     steps:
       - name: Checkout code
