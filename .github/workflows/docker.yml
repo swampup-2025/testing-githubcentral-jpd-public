@@ -19,7 +19,7 @@ jobs:
       OIDC_PROVIDER_NAME: swampup-2025/testing-githubcentral-jpd-public@github
       JF_URL: ${{ vars.JF_URL }}            # e.g: https://githubcentral.jfrog.io/
       JF_REGISTRY: ${{ vars.JF_REGISTRY }}  # e.g: githubcentral.jfrog.io/docker-dev
-      JF_DOCKER_REPO: docker-dev
+      JF_DOCKER_REPO: dev-docker
       IMAGE_NAME: hello-world
 
     steps:
