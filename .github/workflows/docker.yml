@@ -35,13 +35,18 @@ jobs:
           registry: ${{ env.JF_URL }}
           username: ${{ steps.jfrog-setup.outputs.oidc-user }}
           password: ${{ steps.jfrog-setup.outputs.oidc-token }}
-      - name: Build and push Docker image
+      - name: Build and push Docker Image
+        if: false
         id: build
         uses: docker/build-push-action@v4
         with:
           context: .
           push: true
           tags: ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.run_number }}
+      - name: Build and push Docker Image with JFrog CLI
+        run: |
+          jfrog docker build ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.run_number }} .
+          jfrog docker push ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.run_number }}  
 
 #      - name: Create build-provenance attestation
 #        id: attest
