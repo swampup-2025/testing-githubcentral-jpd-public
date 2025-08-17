@@ -23,7 +23,7 @@ jobs:
         env:
           JF_URL: ${{ vars.JF_URL }}
           with:
-            oidc-provider-name: ${OIDC_PROVIDER_NAME}
+          oidc-provider-name: swampup-2025/testing-githubcentral-jpd-public@github
       - name: Push To Artifactory
         id: build
         env:
