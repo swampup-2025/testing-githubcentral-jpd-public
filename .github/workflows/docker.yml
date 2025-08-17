@@ -45,8 +45,10 @@ jobs:
           tags: ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.run_number }}
       - name: Build and push Docker Image with JFrog CLI
         run: |
-          jfrog docker build ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.run_number }} .
-          jfrog docker push ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.run_number }}  
+          jfrog docker build \
+          --tag ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.run_number }} \
+          --push .
+            
 
 #      - name: Create build-provenance attestation
 #        id: attest
