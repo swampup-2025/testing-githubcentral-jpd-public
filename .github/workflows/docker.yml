@@ -55,7 +55,7 @@ jobs:
           
           cat metadata.json
           digest=$(cat metadata.json | jq '.["containerimage.digest"]')
-          echo $digest
+          echo "digest=$digest" | tr -d '"' >> $GITHUB_OUTPUT
 
 #      - name: Create build-provenance attestation
 #        id: attest
