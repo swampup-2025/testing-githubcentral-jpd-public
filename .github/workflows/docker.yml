@@ -54,6 +54,8 @@ jobs:
           --push .
           
           cat metadata.json
+          digest=$(cat metadata.json | jq '.["containerimage.digest"]')
+          echo $digest
 
 #      - name: Create build-provenance attestation
 #        id: attest
