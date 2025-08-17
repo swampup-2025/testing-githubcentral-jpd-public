@@ -22,7 +22,7 @@ jobs:
         uses: jfrog/setup-jfrog-cli@v4
         env:
           JF_URL: ${{ vars.JF_URL }}
-          with:
+        with:
           oidc-provider-name: swampup-2025/testing-githubcentral-jpd-public@github
       - name: Push To Artifactory
         id: build
