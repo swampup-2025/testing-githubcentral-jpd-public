@@ -55,10 +55,10 @@ jobs:
 
 #         jf rt build-docker-create\
 #         example-project-docker-dev --image-file build-metadata --build-name ${{ vars.BUILD_NAME }} --build-number ${{ github.run_number }}
-
+          cat metadata.json
           #send digest to output for provenance attestation
           digest=$(cat metadata.json | jq '.["containerimage.digest"]')
-          echo "digest=$digest" | tr -d '"' >> $GITHUB_OUTPUT
+#          echo "digest=$digest" | tr -d '"' >> $GITHUB_OUTPUT
 
       - name: Create build-provenance attestation
         id: attest
