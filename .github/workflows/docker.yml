@@ -1,0 +1,51 @@
+name: Docker Hello World
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  hello-world:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read            # Necessary by actions/checkout
+      actions: read             # using $GITHUB_OUTPUT
+      id-token: write           # Necessary to create attestations
+      attestations: write       # Necessary to push attestations to GH account
+
+    env:
+      OIDC_PROVIDER_NAME: swampup-2025/testing-githubcentral-jpd-public@github
+      JF_URL: ${{ vars.JF_URL }}            # e.g: https://githubcentral.jfrog.io/
+      JF_REGISTRY: ${{ vars.JF_REGISTRY }}  # e.g: githubcentral.jfrog.io/docker-dev
+      IMAGE_NAME: hello-world
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup JFrog CLI
+        id: jfrog-setup
+        uses: jfrog/setup-jfrog-cli@v4
+        with:
+          oidc-provider-name: ${{ env.OIDC_PROVIDER_NAME }}
+      - name: Log in to JFrog Artifactory
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.JF_URL }}
+          username: ${{ steps.jfrog-setup.outputs.oidc-user }}
+          password: ${{ steps.jfrog-setup.outputs.oidc-token }}
+      - name: Build and push Docker image
+        id: build
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.run_number }}
+
+#      - name: Create build-provenance attestation
+#        id: attest
+#        uses: actions/attest-build-provenance@v2
+#        with:
+#          subject-name: ${{ steps.build.outputs.artifact_subject_name }}
+#          subject-digest: sha256:${{ steps.build.outputs.artifact_digest }}
