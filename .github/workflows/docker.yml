@@ -44,15 +44,20 @@ jobs:
           context: .
           push: true
           tags: ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.run_number }}
-
       - name: Build and push Docker Image with JFrog CLI
-        id: build
+        id: jf-build
         run: |
           jf docker build \
           --tag ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.run_number }} \
           --metadata-file=metadata.json \
           --push .
+
+          jf rt build-docker-create $ {{ env.JF_DOCKER_REPO }} \
+          --image-file metadata.json \
+          --build-name ${{ env.BUILD_NAME }} \
+          --build-number ${{ github.run_number }}
           
+          #expose digest to output so it can be used in provenance attestation 
           digest=$(cat metadata.json | jq '.["containerimage.digest"]')
           echo "digest=$digest" | tr -d '"' >> $GITHUB_OUTPUT
 
@@ -61,5 +66,6 @@ jobs:
         uses: actions/attest-build-provenance@v2
         with:
           subject-name: ${{ env.JF_DOCKER_REPO }}/${{ env.IMAGE_NAME }}/${{ github.run_number }}/manifest.json
-          subject-digest: ${{ steps.build.outputs.digest }}
+#          subject-digest: ${{ steps.build.outputs.digest }}
+          subject-digest: ${{ steps.jf-build.outputs.digest }}
 
