@@ -30,6 +30,7 @@ jobs:
         with:
           oidc-provider-name: ${{ env.OIDC_PROVIDER_NAME }}
       - name: Log in to JFrog Artifactory
+        if: false
         uses: docker/login-action@v3
         with:
           registry: ${{ env.JF_URL }}
