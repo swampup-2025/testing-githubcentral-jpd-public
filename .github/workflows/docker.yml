@@ -52,6 +52,8 @@ jobs:
           --tag ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.run_number }} \
           --metadata-file=metadata.json \
           --push .
+          
+          cat metadata.json
 
 #      - name: Create build-provenance attestation
 #        id: attest
