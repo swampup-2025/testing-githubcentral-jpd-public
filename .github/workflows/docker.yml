@@ -18,7 +18,7 @@ jobs:
     env:
       OIDC_PROVIDER_NAME: swampup-2025/testing-githubcentral-jpd-public@github
       JF_URL: ${{ vars.JF_URL }}            # e.g: https://githubcentral.jfrog.io/
-      JF_REGISTRY: ${{ vars.JF_REGISTRY }}  # e.g: githubcentral.jfrog.io/docker-dev
+      JF_REGISTRY: ${{ vars.JF_REGISTRY }}  # e.g: githubcentral.jfrog.io/dev-docker
       JF_DOCKER_REPO: dev-docker
       IMAGE_NAME: hello-world
 
@@ -46,7 +46,7 @@ jobs:
           tags: ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.run_number }}
 
       - name: Build and push Docker Image with JFrog CLI
-        id: build-and-push
+        id: build
         run: |
           jf docker build \
           --tag ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.run_number }} \
@@ -61,5 +61,5 @@ jobs:
         uses: actions/attest-build-provenance@v2
         with:
           subject-name: ${{ env.JF_DOCKER_REPO }}/${{ env.IMAGE_NAME }}/${{ github.run_number }}/manifest.json
-          subject-digest: ${{ steps.build-and-push.outputs.digest }}
+          subject-digest: ${{ steps.build.outputs.digest }}
 
