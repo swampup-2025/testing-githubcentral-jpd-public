@@ -38,7 +38,7 @@ jobs:
           username: ${{ steps.jfrog-setup.outputs.oidc-user }}
           password: ${{ steps.jfrog-setup.outputs.oidc-token }}
       - name: Build and push Docker Image
-        if: false
+        if: true
         id: build
         uses: docker/build-push-action@v4
         with:
@@ -47,6 +47,7 @@ jobs:
           tags: ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.run_number }}
       - name: Build and push Docker Image with JFrog CLI
         id: jf-build
+        if: false
         run: |
           jf docker build \
           --tag ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.run_number }} \
