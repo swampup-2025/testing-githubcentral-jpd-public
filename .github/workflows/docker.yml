@@ -55,7 +55,6 @@ jobs:
           --metadata-file=metadata.json \
           --push .
           
-#          jf docker push ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.run_number }}
           
           #expose digest to output so it can be used in provenance attestation 
           digest=$(cat metadata.json | jq '.["containerimage.digest"]')
