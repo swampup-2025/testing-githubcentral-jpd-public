@@ -65,5 +65,5 @@ jobs:
         with:
           subject-name: ${{ env.JF_DOCKER_REPO }}/${{ env.IMAGE_NAME }}/${{ github.run_number }}/manifest.json
 #          subject-digest: ${{ steps.build.outputs.digest }}
-          subject-digest: ${{ steps.jf-build.outputs.digest }}
+          subject-digest: ${{ steps.jf.outputs.digest }}
 
