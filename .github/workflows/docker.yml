@@ -50,7 +50,9 @@ jobs:
         if: true
         run: |
           
-          jf docker build \
+          echo building tag ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.run_number }}
+          
+          docker build \
           --tag ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.run_number }} \
           --metadata-file=metadata.json .
           
