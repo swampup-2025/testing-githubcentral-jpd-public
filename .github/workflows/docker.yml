@@ -53,10 +53,8 @@ jobs:
           --metadata-file=metadata.json \
           --push .
 
-          jf rt build-docker-create $ {{ env.JF_DOCKER_REPO }} \
-          --image-file metadata.json \
-          --build-name ${{ env.BUILD_NAME }} \
-          --build-number ${{ github.run_number }}
+          jf rt build-docker-create --image-file metadata.json $ {{ env.JF_DOCKER_REPO }}  
+          
           
           #expose digest to output so it can be used in provenance attestation 
           digest=$(cat metadata.json | jq '.["containerimage.digest"]')
