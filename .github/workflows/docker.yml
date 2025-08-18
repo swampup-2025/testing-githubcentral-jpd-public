@@ -52,8 +52,9 @@ jobs:
           
           jf docker build \
           --tag ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.run_number }} \
-          --metadata-file=metadata.json \
-          --push .
+          --metadata-file=metadata.json .
+          
+          jf docker push ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.run_number }}
           
           
           #expose digest to output so it can be used in provenance attestation 
