@@ -18,10 +18,10 @@ jobs:
     env:
       OIDC_PROVIDER_NAME: swampup-2025/testing-githubcentral-jpd-public@github
       JF_URL: ${{ vars.JF_URL }}            # e.g: https://githubcentral.jfrog.io/
-      JF_REGISTRY: ${{ vars.JF_REGISTRY }}  # e.g: githubcentral.jfrog.io/dev-docker
+      # JF_REGISTRY: ${{ vars.JF_REGISTRY }}  # e.g: githubcentral.jfrog.io/dev-docker
+      JF_REGISTRY: githubcentral.jfrog.io/dev-docker-local
       JF_DOCKER_REPO: dev-docker-local
       IMAGE_NAME: hello-world
-      BUILD_NAME: hello-world-build
 
     steps:
       - name: Checkout code
@@ -38,7 +38,7 @@ jobs:
           username: ${{ steps.jfrog-setup.outputs.oidc-user }}
           password: ${{ steps.jfrog-setup.outputs.oidc-token }}
       - name: Build and push Docker Image
-        if: false
+        if: true
         id: build
         uses: docker/build-push-action@v4
         with:
@@ -47,7 +47,7 @@ jobs:
           tags: ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.run_number }}
       - name: Build and push Docker Image with JFrog CLI
         id: jf-build
-        if: true
+        if: false
         run: |
           
           echo building tag ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.run_number }}
@@ -56,6 +56,9 @@ jobs:
           --tag ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.run_number }} \
           --metadata-file=metadata.json .
           
+          
+          jf docker build --tag ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.run_number }} --push .
+      
           echo before push
           cat metadata.json
           
@@ -67,10 +70,26 @@ jobs:
           echo "digest=$digest" | tr -d '"' >> $GITHUB_OUTPUT
 
       - name: Create build-provenance attestation
-        id: attest
+        id: provenance
         uses: actions/attest-build-provenance@v2
         with:
           subject-name: ${{ env.JF_DOCKER_REPO }}/${{ env.IMAGE_NAME }}/${{ github.run_number }}/manifest.json
-          subject-digest: ${{ steps.jf-build.outputs.digest }}
-#          subject-digest: ${{ steps.build.outputs.digest }}
+          subject-digest: ${{ steps.build.outputs.digest }}
+          #push-to-registry: true
+
+      - name: Generate SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          image: ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}/${{ github.run_number }}
+          format: 'cyclonedx-json'
+          output-file: 'sbom.cyclonedx.json'
+
+      - name: Attest SBOM
+        uses: actions/attest-sbom@v2
+        with:
+          subject-name: ${{ env.JF_DOCKER_REPO }}/${{ env.IMAGE_NAME }}/${{ github.run_number }}/manifest.json
+          subject-digest: ${{ steps.build.outputs.digest }}
+          sbom-path: 'sbom.cyclonedx.json'
+          # push-to-registry: true
+  
 
