@@ -58,14 +58,11 @@ jobs:
           sha256=$(echo "$metadata" | jq -r '."containerimage.digest"' | cut -d ':' -f 2)
           echo "$metadata" | jq -r '."image.name"' | tr ',' '\n' | while read -r name; 
           do
-            echo "${name}@${sha256}" >> image.txt
+            # add another record to the current build info + publish build properties on the image files
+            echo "${name}@${sha256}" > image.txt
+            jf rt build-docker-create ${{ env.JF_DOCKER_REPO }} --image-file image.txt 
           done
-          
-          #printing outcome for debugging
-          cat image.txt
-          
-          # add another record to the current build info + publish build properties on the image files
-          jf rt build-docker-create ${{ env.JF_DOCKER_REPO }} --image-file image.txt 
+
       - name: Create build-provenance attestation
         id: provenance
         uses: actions/attest-build-provenance@v2
