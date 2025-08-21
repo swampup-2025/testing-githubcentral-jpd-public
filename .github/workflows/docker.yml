@@ -45,6 +45,18 @@ jobs:
           context: .
           push: true
           tags: ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.run_number }}
+    
+      - name: Attach BuildInfo to Docker Image
+        id: build-info
+        run: |
+          # convert output to a format that JFrog CLI can use <tag>@<sha256>
+          digest=${{ steps.build.outputs.digest }}
+          digest_sha256=$(echo $digest | cut -d ':' -f 2)
+          echo "${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.run_number }}@$digest_sha256" > image.txt
+          
+          # add another record to the current build info + publish build properties on the image files
+          jf rt build-docker-create ${{ env.JF_DOCKER_REPO }} --image-file image.txt 
+
       - name: Build and push Docker Image with JFrog CLI
         id: jf-build
         if: false
@@ -69,6 +81,7 @@ jobs:
           digest=$(cat metadata.json | jq '.["containerimage.digest"]')
           echo "digest=$digest" | tr -d '"' >> $GITHUB_OUTPUT
 
+                - name: Build and push Docker Image
       - name: Create build-provenance attestation
         id: provenance
         uses: actions/attest-build-provenance@v2
