@@ -1,0 +1,39 @@
+{
+  "buildx.build.provenance": {
+    "builder": {
+      "id": ""
+    },
+    "buildType": "https://mobyproject.org/buildkit@v1",
+    "materials": [
+      {
+        "uri": "pkg:docker/alpine@latest?platform=linux%2Famd64",
+        "digest": {
+          "sha256": "4bcff63911fcb4448bd4fdacec207030997caf25e9bea4045fa6c8c44de311d1"
+        }
+      }
+    ],
+    "invocation": {
+      "configSource": {
+        "entryPoint": "Dockerfile"
+      },
+      "parameters": {
+        "frontend": "dockerfile.v0",
+        "locals": [
+          {
+            "name": "context"
+          },
+          {
+            "name": "dockerfile"
+          }
+        ]
+      },
+      "environment": {
+        "platform": "linux/amd64"
+      }
+    }
+  },
+  "buildx.build.ref": "default/default/wfmo9a9e2t5rjfj6b5ixcisr0",
+  "containerimage.config.digest": "sha256:09121439af6578c9df9250b3afae886ff0276ee027f685f4d9ac0d0a17425dab",
+  "containerimage.digest": "sha256:b25e7644eb83837afe8f237bfcab707cc92de423c6cba3e27de8a958f24dd125",
+  "image.name": "githubcentral.jfrog.io/dev-docker-local/hello-world:42,githubcentral.jfrog.io/dev-docker-local/hello-world:latest"
+}

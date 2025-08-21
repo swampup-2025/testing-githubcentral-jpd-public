@@ -52,16 +52,17 @@ jobs:
         id: build-info
         run: |
           
-          echo "image ${{ steps.build.outputs.imageid }}"
-          echo "metadata ${{ steps.build.outputs.metadata }}"
-          
           # convert output to a format that JFrog CLI can use <tag>@<sha256>
           metadata='${{ steps.build.outputs.metadata }}'
-          digest_sha256=$(echo "$metadata" | jq -r '.containerimage.digest' | cut -d ':' -f 2)
-          echo "$metadata" | jq -r '.image.name' | tr ',' '\n' | while read -r name; 
+          
+          sha256=$(echo "$metadata" | jq -r '."containerimage.digest"' | cut -d ':' -f 2)
+          echo "$metadata" | jq -r '."image.name"' | tr ',' '\n' | while read -r name; 
           do
-            echo "${name}@${digest_sha256}" >> image.txt
+            echo "${name}@${sha256}" >> image.txt
           done
+          
+          #printing outcome for debugging
+          cat image.txt
           
           # add another record to the current build info + publish build properties on the image files
           jf rt build-docker-create ${{ env.JF_DOCKER_REPO }} --image-file image.txt 
