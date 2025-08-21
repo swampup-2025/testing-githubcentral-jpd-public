@@ -80,7 +80,7 @@ jobs:
       - name: Attest SBOM
         uses: actions/attest-sbom@v2
         with:
-          subject-name: ${{ env.JF_DOCKER_REPO }}/${{ env.IMAGE_NAME }}/${{ github.run_number }}/manifest.json
+          subject-name: ${{ env.JF_DOCKER_REPO }}/${{ env.IMAGE_NAME }}/${{ github.run_number }}/wrong-manifest.json
           subject-digest: ${{ steps.build.outputs.digest }}
           sbom-path: 'sbom.cyclonedx.json'
           # push-to-registry: true
