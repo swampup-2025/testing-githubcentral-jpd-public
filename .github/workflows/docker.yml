@@ -52,8 +52,8 @@ jobs:
         id: build-info
         run: |
           
-          echo image ${{ steps.build.outputs.imageid }}
-          echo metadata ${{ steps.build.outputs.metadata }}
+          echo "image ${{ steps.build.outputs.imageid }}"
+          echo "metadata ${{ steps.build.outputs.metadata }}"
           
           # convert output to a format that JFrog CLI can use <tag>@<sha256>
           digest=${{ steps.build.outputs.digest }}
