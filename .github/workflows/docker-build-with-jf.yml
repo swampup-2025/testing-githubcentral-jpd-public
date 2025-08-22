@@ -1,4 +1,4 @@
-name: Docker Hello World
+name: JFrog Docker Hello World
 
 on:
   push:
@@ -44,7 +44,7 @@ jobs:
         run: |
           
           docker build . \
-            --tag ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:jf-${{ github.run_number }} 
+            --tag ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:jf-${{ github.run_number }} \
             --tag ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:jf-latest 
           
           jf docker push ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:jf-${{ github.run_number }}
