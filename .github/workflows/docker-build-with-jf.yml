@@ -39,13 +39,15 @@ jobs:
           username: ${{ steps.jfrog-setup.outputs.oidc-user }}
           password: ${{ steps.jfrog-setup.outputs.oidc-token }}
 
-      - name: Attach BuildInfo to Docker Image
+      - name: Build and push Docker Image
         id: build-info
         run: |
-          
           docker build . \
             --tag ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:jf-${{ github.run_number }} \
-            --tag ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:jf-latest 
+            --tag ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:jf-latest \
+            --metadata-file build-metadata.json
+          
+          cat build-metadata.json
           
           jf docker push ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:jf-${{ github.run_number }}
           jf docker push ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:jf-latest
@@ -56,7 +58,6 @@ jobs:
         with:
           subject-name: ${{ env.JF_DOCKER_REPO }}/${{ env.IMAGE_NAME }}/jf-${{ github.run_number }}/manifest.json
           subject-digest: ${{ steps.build.outputs.digest }}
-          #push-to-registry: true
 
       - name: Generate SBOM
         uses: anchore/sbom-action@v0
@@ -71,6 +72,5 @@ jobs:
           subject-name: ${{ env.JF_DOCKER_REPO }}/${{ env.IMAGE_NAME }}/jf-${{ github.run_number }}/manifest.json
           subject-digest: ${{ steps.build.outputs.digest }}
           sbom-path: 'sbom.cyclonedx.json'
-          # push-to-registry: true
-  
+
 
