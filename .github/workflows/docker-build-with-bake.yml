@@ -46,6 +46,8 @@ jobs:
           push: true
           files: |
             ./docker.hcl
+          set: |
+            *.tags=${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:bake-${{ github.run_number }},${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:bake-latest
 
       - name: Attach BuildInfo to Docker Image
         id: build-info
