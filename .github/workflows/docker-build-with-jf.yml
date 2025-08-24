@@ -45,8 +45,9 @@ jobs:
           docker build . \
             --tag ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:jf-${{ github.run_number }} \
             --tag ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:jf-latest \
-            --metadata-file build-metadata.json
+            --metadata-file build-metadata.json --load
           
+          cat "printing build-metadata.json"
           cat build-metadata.json
           
           jf docker push ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:jf-${{ github.run_number }}
