@@ -52,7 +52,8 @@ jobs:
           docker build --tag $tag --tag $tag_latest .                     
           
           #pushing the images with jf
-          jf docker push $tag $$tag_latest
+          jf docker push $tag 
+          jf docker push $tag_latest 
           
           #allow provenance to see the digest
           digest=$(docker buildx imagetools inspect $tag --format '{{json .}}' | jq -r '.manifest.digest')
