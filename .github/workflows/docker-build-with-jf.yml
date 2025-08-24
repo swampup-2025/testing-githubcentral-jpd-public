@@ -42,7 +42,7 @@ jobs:
       - name: Build and push Docker Image
         id: build-info
         run: |
-          docker build . \
+          docker buildx build . \
             --tag ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:jf-${{ github.run_number }} \
             --tag ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:jf-latest \
             --metadata-file build-metadata.json --load
