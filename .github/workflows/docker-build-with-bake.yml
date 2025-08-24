@@ -1,0 +1,86 @@
+name: Docker Bake Hello World
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  hello-world:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read            # Necessary by actions/checkout
+      actions: read             # using $GITHUB_OUTPUT
+      id-token: write           # Necessary to create attestations
+      attestations: write       # Necessary to push attestations to GH account
+
+    env:
+      OIDC_PROVIDER_NAME: swampup-2025/testing-githubcentral-jpd-public@github
+      JF_URL: ${{ vars.JF_URL }}            # e.g: https://githubcentral.jfrog.io/
+      JF_REGISTRY: ${{ vars.JF_REGISTRY }}  # e.g: githubcentral.jfrog.io/dev-docker
+      JF_DOCKER_REPO: dev-docker-local
+      IMAGE_NAME: hello-world
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup JFrog CLI
+        id: jfrog-setup
+        uses: jfrog/setup-jfrog-cli@v4
+        with:
+          oidc-provider-name: ${{ env.OIDC_PROVIDER_NAME }}
+
+      - name: Log in to JFrog Artifactory
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.JF_URL }}
+          username: ${{ steps.jfrog-setup.outputs.oidc-user }}
+          password: ${{ steps.jfrog-setup.outputs.oidc-token }}
+
+      - name: Build and push
+        id: build
+        uses: docker/bake-action@v6
+        with:
+          push: true
+          set: |
+            *.tags=${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:bake-${{ github.run_number }},${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:bake-latest
+
+      - name: Attach BuildInfo to Docker Image
+        id: build-info
+        run: |
+          
+          # convert output to a format that JFrog CLI can use <tag>@<sha256>
+          metadata='${{ steps.build.outputs.metadata }}'
+          
+          sha256=$(echo "$metadata" | jq -r '."containerimage.digest"' | cut -d ':' -f 2)
+          echo "$metadata" | jq -r '."image.name"' | tr ',' '\n' | while read -r name; 
+          do
+            # add another record to the current build info + publish build properties on the image files
+            echo "${name}@${sha256}" > image.txt
+            jf rt build-docker-create ${{ env.JF_DOCKER_REPO }} --image-file image.txt 
+          done
+
+      - name: Create build-provenance attestation
+        id: provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: ${{ env.JF_DOCKER_REPO }}/${{ env.IMAGE_NAME }}/${{ github.run_number }}/manifest.json
+          subject-digest: ${{ steps.build.outputs.digest }}
+
+      - name: Generate SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          image: ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}
+          format: 'cyclonedx-json'
+          output-file: 'sbom.cyclonedx.json'
+
+      - name: Attest SBOM
+        uses: actions/attest-sbom@v2
+        with:
+          subject-name: ${{ env.JF_DOCKER_REPO }}/${{ env.IMAGE_NAME }}/${{ github.run_number }}/manifest.json
+          subject-digest: ${{ steps.build.outputs.digest }}
+          sbom-path: 'sbom.cyclonedx.json'
+
+
