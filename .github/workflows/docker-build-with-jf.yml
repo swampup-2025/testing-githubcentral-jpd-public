@@ -47,13 +47,11 @@ jobs:
         run: |
           
           tag=${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:jf-${{ github.run_number }}
+          tag_latest=${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:latest-${{ github.run_number }}
           
-          docker buildx build . \
-            --attest type=provenance,disabled=true --attest type=sbom,disabled=true \
-            --tag $tag \
-            --metadata-file build-metadata.json --load
-                    
-          #pushing the images
+          docker build --tag $tag .                     
+          
+          #pushing the images with jf
           jf docker push $tag
           
           #allow provenance to see the digest
