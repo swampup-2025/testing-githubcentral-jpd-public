@@ -43,16 +43,18 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build and push Docker Image
-        id: build-info
+        id: build
         run: |
           docker buildx build . \
             --tag ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:jf-${{ github.run_number }} \
             --tag ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:jf-latest \
             --metadata-file build-metadata.json --load
           
-          echo "printing build-metadata.json"
-          cat build-metadata.json
+          #allow provenance to see the digest
+          digest=$(cat build-metadata.json | jq -r '."containerimage.digest"')
+          echo "digest=$digest" >> $GITHUB_OUTPUT
           
+          #pushing the images
           jf docker push ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:jf-${{ github.run_number }}
           jf docker push ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:jf-latest
 
