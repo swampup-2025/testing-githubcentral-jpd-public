@@ -31,6 +31,7 @@ jobs:
         uses: jfrog/setup-jfrog-cli@v4
         with:
           oidc-provider-name: ${{ env.OIDC_PROVIDER_NAME }}
+          version: latest
 
       - name: Log in to JFrog Artifactory
         uses: docker/login-action@v3
@@ -40,7 +41,6 @@ jobs:
           password: ${{ steps.jfrog-setup.outputs.oidc-token }}
 
       - name: Build and push Docker Image
-        if: true
         id: build
         uses: docker/build-push-action@v4
         with:
@@ -67,6 +67,7 @@ jobs:
         id: provenance
         uses: actions/attest-build-provenance@v2
         with:
+          # to be fixed on next release
           subject-name: ${{ env.JF_DOCKER_REPO }}/${{ env.IMAGE_NAME }}/${{ github.run_number }}/manifest.json
           subject-digest: ${{ steps.build.outputs.digest }}
 
@@ -80,6 +81,7 @@ jobs:
       - name: Attest SBOM
         uses: actions/attest-sbom@v2
         with:
+          # to be fixed on next release
           subject-name: ${{ env.JF_DOCKER_REPO }}/${{ env.IMAGE_NAME }}/${{ github.run_number }}/manifest.json
           subject-digest: ${{ steps.build.outputs.digest }}
           sbom-path: 'sbom.cyclonedx.json'
