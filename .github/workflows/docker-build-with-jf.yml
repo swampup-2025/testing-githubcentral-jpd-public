@@ -3,7 +3,7 @@ name: JFrog Docker Hello World
 on:
   push:
     branches:
-      - main
+      - main_remove
   workflow_dispatch:
 
 jobs:
