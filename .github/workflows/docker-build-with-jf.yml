@@ -46,8 +46,11 @@ jobs:
         id: build
         run: |
           docker buildx build . \
+            --attest type=provenance,disabled=true --attest type=sbom,disabled=true \
             --tag ${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:jf-${{ github.run_number }} \
             --metadata-file build-metadata.json --load
+          
+          cat build-metadata.json
           
           #allow provenance to see the digest
           digest=$(cat build-metadata.json | jq -r '."containerimage.digest"')
