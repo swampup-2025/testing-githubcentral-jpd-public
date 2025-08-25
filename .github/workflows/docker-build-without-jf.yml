@@ -70,7 +70,7 @@ jobs:
         uses: actions/attest-build-provenance@v2
         with:
           # to be fixed on next release
-          subject-name: ${{ env.JF_DOCKER_REPO }}/${{ env.IMAGE_NAME }}/${{ github.run_number }}/manifest.json1
+          subject-name: ${{ env.JF_DOCKER_REPO }}/${{ env.IMAGE_NAME }}/${{ github.run_number }}/manifest.json
           subject-digest: ${{ steps.build.outputs.digest }}
 
       - name: Generate SBOM
