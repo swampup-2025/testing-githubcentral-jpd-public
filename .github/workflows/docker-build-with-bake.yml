@@ -47,8 +47,7 @@ jobs:
           files: |
             ./docker.hcl
           set: |
-            hello-world.tags.0=${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:bake-${{ github.run_number }}
-            hello-world.tags.1=${{ env.JF_REGISTRY }}/${{ env.IMAGE_NAME }}:bake-latest
+            *.TAG=bake-${{ github.run_number }}
 
       - name: Attach BuildInfo to Docker Image
         id: build-info
