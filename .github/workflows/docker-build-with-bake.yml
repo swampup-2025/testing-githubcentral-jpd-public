@@ -46,8 +46,8 @@ jobs:
           push: true
           files: |
             ./docker.hcl
-          set: |
-            hello-world.TAG=bake-${{ github.run_number }}
+          args: |
+            TAG=bake-${{ github.run_number }}
 
       - name: Attach BuildInfo to Docker Image
         id: build-info
