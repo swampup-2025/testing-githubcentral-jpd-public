@@ -3,7 +3,7 @@ name: Docker Hello World
 on:
   push:
     branches:
-      - main_remove
+      - main
   workflow_dispatch:
 
 jobs:
@@ -31,7 +31,6 @@ jobs:
         uses: jfrog/setup-jfrog-cli@v4
         with:
           oidc-provider-name: ${{ env.OIDC_PROVIDER_NAME }}
-          version: latest
 
       - name: Log in to JFrog Artifactory
         uses: docker/login-action@v3
@@ -70,7 +69,7 @@ jobs:
         uses: actions/attest-build-provenance@v2
         with:
           # to be fixed on next release
-          subject-name: ${{ env.JF_DOCKER_REPO }}/${{ env.IMAGE_NAME }}/${{ github.run_number }}/manifest.json
+          subject-name: ${{ env.JF_DOCKER_REPO }}/${{ env.IMAGE_NAME }}/${{ github.run_number }}/manifest.json1
           subject-digest: ${{ steps.build.outputs.digest }}
 
       - name: Generate SBOM
