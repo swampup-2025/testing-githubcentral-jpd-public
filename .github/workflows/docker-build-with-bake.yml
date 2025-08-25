@@ -54,8 +54,6 @@ jobs:
         id: build-info
         run: |
           
-          echo "is this working ? ${{ steps.jfrog-setup.outputs.oidc-user }}"
-          
           # convert output to a format that JFrog CLI can use <tag>@<sha256>
           metadata='${{ steps.build.outputs.metadata }}'
           

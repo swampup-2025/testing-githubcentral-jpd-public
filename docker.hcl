@@ -5,4 +5,5 @@ group "default" {
 target "hello-world" {
   context = "."
   dockerfile = "Dockerfile"
+  tags = []
 }
