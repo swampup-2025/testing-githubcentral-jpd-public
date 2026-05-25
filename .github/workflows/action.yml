@@ -15,6 +15,8 @@ jobs:
       actions: read             # using $GITHUB_OUTPUT
       id-token: write           # Necessary to create attestations
       attestations: write       # Necessary to push attestations to GH account
+    env:
+      pro_mcp_test4env: "true"
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
